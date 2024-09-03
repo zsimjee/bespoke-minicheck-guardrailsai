@@ -62,6 +62,9 @@ class BespokeAIFactCheck(Validator):
 
         return any([score >= threshold for score in output["claim_supported_by_contexts"]])
 
+    def _chunking_function(self, chunk: str) -> list[str]:
+        return nltk.sent_tokenize(chunk)
+
     def validate(self, value: Any, metadata: Dict = {}) -> ValidationResult:
         threshold = self._threshold if "threshold" not in metadata else metadata["threshold"]
         split_sentences = self._split_sentences if "split_sentences" not in metadata else metadata["split_sentences"]
