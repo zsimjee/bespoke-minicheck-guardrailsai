@@ -1,5 +1,3 @@
-from guardrails import Guard
-import pytest
 from validator import BespokeAIFactCheck
 
 validator = BespokeAIFactCheck(on_fail="fix")
