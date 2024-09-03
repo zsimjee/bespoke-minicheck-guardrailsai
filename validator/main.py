@@ -17,7 +17,28 @@ nltk.download('punkt', quiet=True)
 
 @register_validator(name="guardrails/bespokeai_factcheck", data_type="string")
 class BespokeAIFactCheck(Validator):
-    # If you don't have any init args, you can omit the __init__ method.
+    """Validates that the LLM-generated text is supported by the provided
+    context using BespokeAI's factcheck API.
+
+    This validator uses BespokeAI's factcheck API to evaluate the generated text
+    against the provided context.
+
+    **Key Properties**
+
+    | Property                      | Description                         |
+    | ----------------------------- | ----------------------------------- |
+    | Name for `format` attribute   | `guardrails/bespokeai_factcheck`    |
+    | Supported data types          | `string`                            |
+    | Programmatic fix              | Returns supported claims            |
+
+    Args:
+        threshold (float, optional): The minimum score for a claim to be
+            considered supported. Defaults to 0.5.
+        split_sentences (bool, optional): Whether to split the input into
+            sentences for individual evaluation. Defaults to True.
+        on_fail (Optional[Callable], optional): A callable to execute when the
+            validation fails. Defaults to None.
+    """
     def __init__(
         self,
         threshold: float = 0.5,

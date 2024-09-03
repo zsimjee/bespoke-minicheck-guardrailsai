@@ -1,30 +1,20 @@
 [project]
-name = "validator-template"
+name = "bespokeai-factcheck"
 version = "0.0.0"
-description = "Template repo for Guardrails Hub validators."
-authors = [
-    {name = "Guardrails AI", email = "contact@guardrailsai.com"}
-]
-license = {file = "LICENSE"}
+description = "Hallucination Detection using BespokeAI's FactCheck model."
+authors = [{ name = "Guardrails AI", email = "contact@guardrailsai.com" }]
+license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">= 3.8.1"
-dependencies = [
-    "guardrails-ai>=0.4.0"
-]
+dependencies = ["guardrails-ai>=0.4.0", "requests", "nltk"]
 
 [project.optional-dependencies]
-dev = [
-    "pyright",
-    "pytest",
-    "ruff"
-] 
+dev = ["pyright", "pytest", "ruff"]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-rP"
-testpaths = [
-    "tests"
-]
+testpaths = ["tests"]
 
 [tool.pyright]
 include = ["validator"]
