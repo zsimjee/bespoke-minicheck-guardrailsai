@@ -1,27 +1,21 @@
-# to run these, run 
-# make tests
-
 from guardrails import Guard
 import pytest
-from validator import ValidatorTemplate
+from validator import BespokeAIFactCheck
 
-# We use 'exception' as the validator's fail action,
-#  so we expect failures to always raise an Exception
-# Learn more about corrective actions here:
-#  https://www.guardrailsai.com/docs/concepts/output/#%EF%B8%8F-specifying-corrective-actions
-guard = Guard.from_string(validators=[ValidatorTemplate(arg_1="arg_1", arg_2="arg_2", on_fail="exception")])
+validator = BespokeAIFactCheck(on_fail="fix")
+
 
 def test_pass():
-  test_output = "pass"
-  result = guard.parse(test_output)
-  
-  assert result.validation_passed is True
-  assert result.validated_output == test_output
+    test_output = "Alex likes dogs."
+    result = validator.validate(test_output, metadata={"contexts": ["Alex likes dogs, but not cats."]})
+
+    assert result.outcome == "pass"
 
 def test_fail():
-  with pytest.raises(Exception) as exc_info:
-    test_output = "fail"
-    guard.parse(test_output)
-  
-  # Assert the exception has your error_message
-  assert str(exc_info.value) == "Validation failed for field with errors: {A descriptive but concise error message about why validation failed}"
+    test_output = "Alex likes cats. Alex likes dogs."
+    result = validator.validate(test_output, metadata={"contexts": ["Alex likes dogs, but not cats."]})
+
+    print(result)
+
+    assert result.outcome == "fail"
+    assert result.fix_value == "Alex likes dogs."
