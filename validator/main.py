@@ -49,23 +49,22 @@ class BespokeAIFactCheck(Validator):
         self._threshold = threshold
         self._split_sentences = split_sentences
 
-    def is_supported_claim(self, contexts: list[str], claim: str, threshold: float) -> bool:
-        key = os.environ["BESPOKEAI_API_KEY"]
-        output = requests.post(
-            "https://api.bespokelabs.ai/v0/argus/factcheck",
-            json={
-                "contexts": contexts,
-                "claim": claim,
-            },
-            headers={"api_key": key},
-        ).json()
-
-        return any([score >= threshold for score in output["claim_supported_by_contexts"]])
-
     def _chunking_function(self, chunk: str) -> list[str]:
         return nltk.sent_tokenize(chunk)
 
-    def validate(self, value: Any, metadata: Dict = {}) -> ValidationResult:
+    def _inference_local(self, model_input: Any):
+        raise NotImplementedError("Local inference is not supported for BespokeAIFactCheck validator.")
+
+    def _inference_remote(self, model_input: Any):
+        key = os.environ["BESPOKEAI_API_KEY"]
+        output = requests.post(
+            "https://api.bespokelabs.ai/v0/argus/factcheck",
+            json=model_input,
+            headers={"api_key": key},
+        ).json()
+        return output
+
+    def _validate(self, value: Any, metadata: Dict = {}) -> ValidationResult:
         threshold = self._threshold if "threshold" not in metadata else metadata["threshold"]
         split_sentences = self._split_sentences if "split_sentences" not in metadata else metadata["split_sentences"]
         contexts = metadata.get("contexts", [])
@@ -79,15 +78,24 @@ class BespokeAIFactCheck(Validator):
             claims = [value]
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = {executor.submit(self.is_supported_claim, contexts, claim, threshold): claim for claim in claims}
-            claim_to_supported = {futures[future]: future.result() for future in concurrent.futures.as_completed(futures)}
+            futures = [executor.submit(self._inference, {"claim": claim, "contexts": contexts}) for claim in claims]
+            is_supported = [future.result() for future in concurrent.futures.as_completed(futures)]
 
-        supported = all(claim_to_supported.values())
-
-        if supported:
-            return PassResult()
-
-        return FailResult(
-            error_message="Claim not supported by BespokeAI",
-            fix_value=" ".join([claim for claim, supported in claim_to_supported.items() if supported]),
+        all_claims_supported = all(
+            any(score >= threshold for score in scores['claim_supported_by_contexts'])
+            for scores in is_supported
         )
+
+        if all_claims_supported:
+            return PassResult()
+        else:
+            supported_claims = [
+                claim
+                for claim, supported in zip(claims, is_supported)
+                if any(score >= threshold for score in supported['claim_supported_by_contexts'])
+            ]
+
+            return FailResult(
+                error_message="Claim not supported by BespokeAI",
+                fix_value=" ".join(supported_claims),
+            )
