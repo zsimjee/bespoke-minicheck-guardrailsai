@@ -1,6 +1,2 @@
-print("post-install starting...")
-print(
-    "This is where you would do things like download nltk tokenizers or login to the HuggingFace hub..."
-)
-print("post-install complete!")
-# If you don't have anything to add here you should delete this file.
+print("Reminder: Please set your BESPOKE_API_KEY environment variable.")
+print("If you don't have one, you can get it at https://console.bespokelabs.ai/")
