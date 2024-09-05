@@ -6,7 +6,7 @@ authors = [{ name = "Guardrails AI", email = "contact@guardrailsai.com" }]
 license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">= 3.8.1"
-dependencies = ["guardrails-ai>=0.4.0", "requests", "nltk"]
+dependencies = ["guardrails-ai>=0.4.0", "requests", "nltk", "bespokelabs"]
 
 [project.optional-dependencies]
 dev = ["pyright", "pytest", "ruff"]

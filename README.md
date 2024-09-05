@@ -21,7 +21,7 @@ This validator uses BespokeAI's factcheck API to evaluate the generated text aga
 	- requests
 
 * Foundation model access keys:
-	- BESPOKEAI_API_KEY
+	- BESPOKE_API_KEY
 
 ## Installation
 

@@ -8,9 +8,9 @@ from guardrails.validator_base import (
     register_validator,
 )
 import os
-import requests
 import nltk
 import concurrent.futures
+from bespokelabs import BespokeLabs
 
 
 nltk.download('punkt', quiet=True)
@@ -48,6 +48,10 @@ class BespokeAIFactCheck(Validator):
         super().__init__(on_fail=on_fail, threshold=threshold)
         self._threshold = threshold
         self._split_sentences = split_sentences
+        self.bl = BespokeLabs(
+            auth_token=os.environ.get("BESPOKE_API_KEY"),
+        )
+
 
     def _chunking_function(self, chunk: str) -> list[str]:
         return nltk.sent_tokenize(chunk)
@@ -56,21 +60,19 @@ class BespokeAIFactCheck(Validator):
         raise NotImplementedError("Local inference is not supported for BespokeAIFactCheck validator.")
 
     def _inference_remote(self, model_input: Any):
-        key = os.environ["BESPOKEAI_API_KEY"]
-        output = requests.post(
-            "https://api.bespokelabs.ai/v0/argus/factcheck",
-            json=model_input,
-            headers={"api_key": key},
-        ).json()
-        return output
+        response = self.bl.minicheck.factcheck.create(
+            claim=model_input["claim"],
+            context=model_input["context"],
+        )
+        return response
 
     def _validate(self, value: Any, metadata: Dict = {}) -> ValidationResult:
         threshold = self._threshold if "threshold" not in metadata else metadata["threshold"]
         split_sentences = self._split_sentences if "split_sentences" not in metadata else metadata["split_sentences"]
-        contexts = metadata.get("contexts", [])
+        context = metadata.get("context", "")
 
-        if not (len(contexts) > 0 and isinstance(contexts, list)):
-            raise ValueError("contexts must be a list of strings")
+        if len(context) == 0:
+            raise ValueError("context is required")
 
         if split_sentences:
             claims = nltk.sent_tokenize(value)
@@ -78,12 +80,12 @@ class BespokeAIFactCheck(Validator):
             claims = [value]
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            futures = [executor.submit(self._inference, {"claim": claim, "contexts": contexts}) for claim in claims]
+            futures = [executor.submit(self._inference, {"claim": claim, "context": context}) for claim in claims]
             is_supported = [future.result() for future in concurrent.futures.as_completed(futures)]
 
         all_claims_supported = all(
-            any(score >= threshold for score in scores['claim_supported_by_contexts'])
-            for scores in is_supported
+            response.support_prob >= threshold
+            for response in is_supported
         )
 
         if all_claims_supported:
@@ -91,8 +93,8 @@ class BespokeAIFactCheck(Validator):
         else:
             supported_claims = [
                 claim
-                for claim, supported in zip(claims, is_supported)
-                if any(score >= threshold for score in supported['claim_supported_by_contexts'])
+                for claim, response in zip(claims, is_supported)
+                if response.support_prob >= threshold
             ]
 
             return FailResult(
