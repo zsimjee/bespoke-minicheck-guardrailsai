@@ -10,6 +10,7 @@ from guardrails.validator_base import (
 import os
 import nltk
 import concurrent.futures
+from tenacity import retry, stop_after_attempt, wait_exponential
 from bespokelabs import BespokeLabs
 
 
@@ -59,6 +60,10 @@ class BespokeAIFactCheck(Validator):
     def _inference_local(self, model_input: Any):
         raise NotImplementedError("Local inference is not supported for BespokeAIFactCheck validator.")
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=4, max=10),
+    )
     def _inference_remote(self, model_input: Any):
         response = self.bl.minicheck.factcheck.create(
             claim=model_input["claim"],

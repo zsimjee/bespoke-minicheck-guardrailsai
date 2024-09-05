@@ -13,7 +13,5 @@ def test_fail():
     test_output = "Alex likes cats. Alex likes dogs."
     result = validator.validate(test_output, metadata={"context": "Alex likes dogs, but not cats."})
 
-    print(result)
-
     assert result.outcome == "fail"
     assert result.fix_value == "Alex likes dogs."
