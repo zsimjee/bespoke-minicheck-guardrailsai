@@ -1,5 +1,6 @@
+import os
 from validator import BespokeMiniCheck
-
+os.environ["BESPOKE_API_KEY"] = "bespoke-demo-key"
 bespoke_minicheck_validator = BespokeMiniCheck(on_fail="fix")
 
 
