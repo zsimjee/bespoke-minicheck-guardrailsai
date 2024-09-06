@@ -1,3 +1,3 @@
-from .main import BespokeAIFactCheck
+from .main import BespokeMiniCheck
 
-__all__ = ["BespokeAIFactCheck"]
+__all__ = ["BespokeMiniCheck"]
