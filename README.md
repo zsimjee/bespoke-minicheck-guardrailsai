@@ -21,7 +21,6 @@ This validator uses BespokeLabs.AI's minicheck API to evaluate LLM generated tex
 	- tenacity
 * Foundation model access keys:
 	- BESPOKE_API_KEY (get it from [BespokeLabs Console](https://console.bespokelabs.ai/))
-
 ## Installation
 
 ```bash
