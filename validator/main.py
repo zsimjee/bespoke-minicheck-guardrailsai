@@ -103,6 +103,6 @@ class BespokeMiniCheck(Validator):
             ]
 
             return FailResult(
-                error_message="Claim not supported by BespokeMini",
+                error_message="Claim not supported by BespokeMiniCheck",
                 fix_value=" ".join(supported_claims),
             )
