@@ -16,19 +16,19 @@ from bespokelabs import BespokeLabs
 
 nltk.download('punkt', quiet=True)
 
-@register_validator(name="guardrails/bespokeai_factcheck", data_type="string")
-class BespokeAIFactCheck(Validator):
+@register_validator(name="guardrails/bespoke_minicheck", data_type="string")
+class BespokeMiniCheck(Validator):
     """Validates that the LLM-generated text is supported by the provided
-    context using BespokeAI's factcheck API.
+    context using BespokeLabs.AI's minicheck API.
 
-    This validator uses BespokeAI's factcheck API to evaluate the generated text
+    This validator uses BespokeLabs.AI's minicheck API to evaluate the generated text
     against the provided context.
 
     **Key Properties**
 
     | Property                      | Description                         |
     | ----------------------------- | ----------------------------------- |
-    | Name for `format` attribute   | `guardrails/bespokeai_factcheck`    |
+    | Name for `format` attribute   | `guardrails/bespoke_minicheck`    |
     | Supported data types          | `string`                            |
     | Programmatic fix              | Returns supported claims            |
 
@@ -58,7 +58,7 @@ class BespokeAIFactCheck(Validator):
         return nltk.sent_tokenize(chunk)
 
     def _inference_local(self, model_input: Any):
-        raise NotImplementedError("Local inference is not supported for BespokeAIFactCheck validator.")
+        raise NotImplementedError("Local inference is not supported for BespokeMiniCheck validator.")
 
     @retry(
         stop=stop_after_attempt(3),
@@ -103,6 +103,6 @@ class BespokeAIFactCheck(Validator):
             ]
 
             return FailResult(
-                error_message="Claim not supported by BespokeAI",
+                error_message="Claim not supported by BespokeMini",
                 fix_value=" ".join(supported_claims),
             )

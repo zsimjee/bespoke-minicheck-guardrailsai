@@ -1,12 +1,12 @@
 [project]
 name = "bespokeai-factcheck"
 version = "0.0.0"
-description = "Hallucination Detection using BespokeAI's FactCheck model."
-authors = [{ name = "Guardrails AI", email = "contact@guardrailsai.com" }]
+description = "Hallucination Detection using BespokeLabs.AI's MiniCheck model."
+authors = [{ name = "Guardrails AI", email = "contact@guardrailsai.com" }, { name = "BespokeLabs.AI", email = "company@bespokelabs.ai" }]
 license = { file = "LICENSE" }
 readme = "README.md"
 requires-python = ">= 3.8.1"
-dependencies = ["guardrails-ai>=0.4.0", "requests", "nltk", "bespokelabs", "tenacity"]
+dependencies = ["guardrails-ai>=0.4.0", "nltk", "bespokelabs", "tenacity"]
 
 [project.optional-dependencies]
 dev = ["pyright", "pytest", "ruff"]
