@@ -1,17 +1,17 @@
-from validator import BespokeAIFactCheck
+from validator import BespokeMiniCheck
 
-validator = BespokeAIFactCheck(on_fail="fix")
+bespoke_minicheck_validator = BespokeMiniCheck(on_fail="fix")
 
 
 def test_pass():
     test_output = "Alex likes dogs."
-    result = validator.validate(test_output, metadata={"context": "Alex likes dogs, but not cats."})
+    result = bespoke_minicheck_validator.validate(test_output, metadata={"context": "Alex likes dogs, but not cats."})
 
     assert result.outcome == "pass"
 
 def test_fail():
     test_output = "Alex likes cats. Alex likes dogs."
-    result = validator.validate(test_output, metadata={"context": "Alex likes dogs, but not cats."})
+    result = bespoke_minicheck_validator.validate(test_output, metadata={"context": "Alex likes dogs, but not cats."})
 
     assert result.outcome == "fail"
     assert result.fix_value == "Alex likes dogs."
