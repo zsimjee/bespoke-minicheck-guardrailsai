@@ -27,7 +27,7 @@ This validator uses BespokeLabs.AI's minicheck API to evaluate LLM generated tex
 ## Installation
 
 ```bash
-$ guardrails hub install hub://guardrails/bespoke_minicheck
+$ guardrails hub install hub://bespokelabs/bespoke_minicheck
 ```
 
 ## Usage Examples

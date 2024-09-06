@@ -16,7 +16,7 @@ from bespokelabs import BespokeLabs
 
 nltk.download('punkt', quiet=True)
 
-@register_validator(name="guardrails/bespoke_minicheck", data_type="string")
+@register_validator(name="bespokelabs/bespoke_minicheck", data_type="string")
 class BespokeMiniCheck(Validator):
     """Validates that the LLM-generated text is supported by the provided
     context using BespokeLabs.AI's minicheck API.
@@ -28,7 +28,7 @@ class BespokeMiniCheck(Validator):
 
     | Property                      | Description                         |
     | ----------------------------- | ----------------------------------- |
-    | Name for `format` attribute   | `guardrails/bespoke_minicheck`    |
+    | Name for `format` attribute   | `bespokelabs/bespoke_minicheck`    |
     | Supported data types          | `string`                            |
     | Programmatic fix              | Returns supported claims            |
 
